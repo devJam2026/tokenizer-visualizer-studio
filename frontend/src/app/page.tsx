@@ -13,6 +13,9 @@ import {
 import MetricsGrid from "@/components/MetricsGrid";
 import CompareBar from "@/components/CompareBar";
 import TokenCanvas from "@/components/TokenCanvas";
+import ApiKeySettings from "@/components/ApiKeySettings";
+import CostCalculator from "@/components/CostCalculator";
+import AIStudio from "@/components/AIStudio";
 
 // =====================================================================
 // PRESET TEMPLATES FOR EDGE-CASE PROFILING
@@ -56,6 +59,7 @@ export default function TokenizerVisualizerStudio() {
   const [isApiOnline, setIsApiOnline] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [apiData, setApiData] = useState<any>(null);
+  const [apiKey, setApiKey] = useState<string>("");
 
   // -------------------------------------------------------------------
   // REACT REF HOOKS
@@ -364,6 +368,30 @@ export default function TokenizerVisualizerStudio() {
       {/* 6. COMPARATIVE CHART SYSTEM */}
       {/* Benchmarks cl100k, o200k, BERT, and LLaMA side-by-side using responsive progress bars. */}
       <CompareBar data={compareData} />
+
+      {/* 7. PREMIUM AI OPTIMIZATION & BUDGET STUDIO */}
+      <div className="flex flex-col gap-4 mt-4 border-t border-slate-800/80 pt-6">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-indigo-500 animate-pulse" />
+          <h2 className="text-lg font-bold text-slate-100 uppercase tracking-widest bg-gradient-to-r from-slate-100 to-indigo-300 bg-clip-text text-transparent">
+            AI Studio & Prompt Budget Planner
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <AIStudio 
+              inputText={text} 
+              apiKey={apiKey} 
+              onApplyOptimized={(optText) => setText(optText)} 
+            />
+          </div>
+          <div className="flex flex-col gap-6">
+            <ApiKeySettings onKeyChange={(key) => setApiKey(key)} />
+            <CostCalculator inputTokenCount={activeModelData.tokenCount} />
+          </div>
+        </div>
+      </div>
+
       
       {/* FOOTER */}
       <footer className="text-center text-[10px] text-slate-500 font-medium py-4 mt-6 border-t border-slate-900">

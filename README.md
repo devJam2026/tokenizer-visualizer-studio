@@ -43,13 +43,15 @@ npm run dev
 tokenizer-visualizer-studio/
 ├── README.md                 # Project quick-start, local startup commands, and guide.
 ├── .gitignore                # Filters node_modules, build artifacts, and caches.
+├── .env.example              # Development environment configurations.
 ├── docs/
 │   └── system_design.md      # In-depth system design, BPE math alignment, and fallback logic.
 ├── backend/
-│   ├── requirements.txt      # Python dependencies (fastapi, uvicorn, tiktoken, transformers).
+│   ├── requirements.txt      # Python dependencies (fastapi, uvicorn, tiktoken, transformers, openai).
 │   ├── run.py                # Server execution entry point.
-│   ├── main.py               # REST API endpoints and pricing metrics.
-│   └── tokenizer_service.py  # Slicing engines and offline fallback algorithms.
+│   ├── main.py               # REST API endpoints, pricing metrics, and AI profiling routes.
+│   ├── tokenizer_service.py  # Slicing engines and offline fallback heuristics.
+│   └── openai_service.py     # OpenAI client wrapper for prompt optimizations.
 └── frontend/
     ├── package.json          # Next.js npm dependencies.
     ├── next.config.ts        # Rewrites /api/* request proxies to localhost:8000.
@@ -57,12 +59,15 @@ tokenizer-visualizer-studio/
     └── src/
         ├── app/
         │   ├── layout.tsx    # SEO metadata titles and layouts.
-        │   ├── globals.css   # Custom Outift typography, backgrounds, and scrollbars.
+        │   ├── globals.css   # Custom Outfit typography, backgrounds, and scrollbars.
         │   └── page.tsx      # Central dashboard orchestrator.
         └── components/
-            ├── MetricsGrid.tsx # Character, Token, Ratio, and Cost statistic cards.
-            ├── CompareBar.tsx  # Interactive horizontal comparative charts.
-            └── TokenCanvas.tsx # Alternating token highlight chips and inspector tooltips.
+            ├── MetricsGrid.tsx  # Character, Token, Ratio, and Cost statistic cards.
+            ├── CompareBar.tsx   # Interactive horizontal comparative charts.
+            ├── TokenCanvas.tsx  # Alternating token highlight chips and inspector tooltips.
+            ├── ApiKeySettings.tsx # Secure client-side local storage API Key controller.
+            ├── CostCalculator.tsx # Dynamic sliding prompt billing calculator and gauges.
+            └── AIStudio.tsx     # Tabbed AI diagnostics and side-by-side prompt optimizations.
 ```
 
 ---
@@ -79,6 +84,11 @@ For a deep dive into the underlying tokenization logic, sub-word BPE, WordPiece,
 *   **Multi-Model Switch Selector:** Switch dynamically between OpenAI GPT-4, GPT-4o, Meta LLaMA 3, and Google BERT.
 *   **Interactive Tokenized Canvas:** Chips automatically color-code alternating character splits with hovering tooltips inspect cards.
 *   **Whitespace & Layout Debugger:** Renders layout dead-air like standard tabs (`⇥ `), returns (`↵`), and spaces (`·`) physically, helping you minify prompts.
-*   **Live Tokenomics Report:** Computes character length, token metrics, compression ratios, and pricing per 1 Million API invocations.
+*   **Live Tokenomics Report:** Computes character length, token metrics, compression ratios, and pricing per 1 Million API requests.
 *   **Token Inflation Presets:** Includes instant mock loaders for Hindi, Bengali, Cyrillic, Emojis, and python code blocks.
 *   **Offline Resilience Fallbacks:** Seamlessly runs native Python subword simulation splits if offline or if transformers download fails.
+*   **🤖 Premium AI Diagnostics & Optimizer (V3):** Explains why a prompt has a high token footprint, analyzes structural waste, and optimizes prompt redundancy to save up to 45% of prompt tokens.
+*   **🔒 Secure API Key Isolation:** OpenAI keys are processed client-side strictly inside standard `localStorage` and sent on the fly via request headers, eliminating server persistence.
+*   **📶 Hybrid Rule-Based Diagnostic Engine:** Compiles high-quality tokenomics reports offline, checking whitespace density and BPE byte expansion script factors without needing a key.
+*   **📊 Dynamic Cost Budget Planner:** Adjusts expected monthly queries and completion lengths using sliding controllers to estimate production costs in real-time.
+

@@ -45,8 +45,8 @@ export default function CompareBar({ data }: CompareBarProps) {
     },
     {
       id: "llama",
-      name: "Meta LLaMA 3",
-      algorithm: "SentencePiece",
+      name: "LLaMA-style",
+      algorithm: "SentencePiece-based",
       count: llamaCount,
       ratio: data.llama?.ratio || 0,
       isFallback: data.llama?.isFallback || false,
@@ -152,7 +152,7 @@ export default function CompareBar({ data }: CompareBarProps) {
                     : tok.id === "cl100k_base"
                     ? "Industry-standard Tiktoken GPT-4 base representation."
                     : tok.id === "llama"
-                    ? "SentencePiece subword spacing (preserves layout)."
+                    ? "SentencePiece-based LLaMA-compatible tokenizer (preserves layout)."
                     : "WordPiece subword slicing (classic lookup representation)."}
                 </span>
                 {isWinner && (

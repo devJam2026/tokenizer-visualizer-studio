@@ -60,7 +60,7 @@ export default function MetricsGrid({
     },
     {
       id: "metric-cost",
-      title: "Cost / 1M Prompts",
+      title: "Est. Cost / 1M Requests",
       value: `$${costPerMillionRequests.toFixed(2)}`,
       subtitle: `Per request: $${costPerRequest.toFixed(6)}`,
       icon: DollarSign,

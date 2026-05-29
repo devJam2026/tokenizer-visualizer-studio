@@ -68,24 +68,29 @@ tokenizer-visualizer-studio/
 ├── docs/
 │   └── system_design.md      # Detailed system architecture, algorithms deep dive, and designs.
 ├── backend/
-│   ├── requirements.txt      # Lists Python libraries: fastapi, uvicorn, tiktoken, transformers, tokenizers.
+│   ├── requirements.txt      # Lists Python libraries: fastapi, uvicorn, tiktoken, transformers, tokenizers, openai.
 │   ├── run.py                # Boots uvicorn server on localhost:8000 with reload enabled.
-│   ├── main.py               # Exposes POST /api/tokenize (parallel parsing) and GET /api/health (status logs).
-│   └── tokenizer_service.py  # Coordinates tokenization logic and runs local fallback simulators.
+│   ├── main.py               # Exposes parallel tokenization endpoints and V3 AI diagnostic routes.
+│   ├── tokenizer_service.py  # Coordinates tokenization logic and runs local fallback simulators.
+│   └── openai_service.py     # Integrates with OpenAI API for prompt diagnostics and optimizations.
 └── frontend/
-    ├── package.json          # Bundles Next.js 16+, typescript dev types, Tailwind 4, and Lucide React icons.
+    ├── package.json          # Next.js 16 npm dependencies, Tailwind 4, and Lucide React icons.
     ├── next.config.ts        # Rewrites /api/* to http://127.0.0.1:8000/api/* to proxy traffic and bypass CORS.
-    ├── tsconfig.json         # Configures compilation aliases (@/* and @@/*) mapping to standard root paths.
+    ├── tsconfig.json         # Configures compilation aliases (@/*) mapping to standard root paths.
     └── src/
         ├── app/
         │   ├── layout.tsx    # Manages global HTML tags, SEO keywords, titles, and layout shells.
         │   ├── globals.css   # Imports Outfit/Mono font faces, radial mesh styles, and custom scrollbars.
-        │   └── page.tsx      # Main state machine, handling presets, theme tags, and connection diagnostics.
+        │   └── page.tsx      # Central dashboard orchestrator.
         └── components/
-            ├── MetricsGrid.tsx # Renders glassmorphic cards tracking character, token counts, and cost scaling.
-            ├── CompareBar.tsx  # Generates side-by-side animated benchmarking progress charts.
-            └── TokenCanvas.tsx # Visualizes tokens as colored chips with floating mouse tooltips.
+            ├── MetricsGrid.tsx   # Renders glassmorphic cards tracking character, token counts, and cost scaling.
+            ├── CompareBar.tsx    # Generates side-by-side animated benchmarking progress charts.
+            ├── TokenCanvas.tsx   # Visualizes tokens as colored chips with floating mouse tooltips.
+            ├── ApiKeySettings.tsx # Configures secure local storage client-side API keys.
+            ├── CostCalculator.tsx # Interactive parameter slider costing panel.
+            └── AIStudio.tsx      # Main tabbed interface for prompt explanations and compaction.
 ```
+
 
 ---
 
@@ -200,3 +205,37 @@ To ensure the studio is **100% resilient and always active**, we implemented hig
 *   **Deterministic ID Generation:** Slices deterministic hashes to generate token IDs between `1000` and `50000`, ensuring the same token string always yields the identical ID!
 
 This design guarantees the studio **never crashes** and behaves exactly like the real deep-learning models even in strict offline environments.
+
+---
+
+## 7. V3 Premium AI Diagnostics & Budget Calculator System Design
+
+### 1. API Key Security and Isolation Architecture
+To protect sensitive developer secrets:
+- The app operates on a **No-Store architecture**. 
+- When a user inputs their API key in `ApiKeySettings.tsx`, it is saved exclusively in the client's web browser `localStorage` (`tokenizer_openai_api_key`).
+- For AI calls, the key is passed dynamically in the HTTP request headers using a custom `X-OpenAI-API-Key` header.
+- The FastAPI backend extracts the header in-flight, initializes a stateless `OpenAI()` client instance, completes the request, and discards the key immediately. The key is never persisted in logs or server databases.
+
+### 2. Prompt Optimizer Machine Learning constraints
+Prompt compression is performed using `gpt-4o-mini` with a structural system prompt instructing it to perform linguistic reduction (removing conversational fluff, compacting excess whitespace, and employing concise syntactic constructs) while retaining 100% semantic identity. 
+
+To ensure clean processing, we force structured output using **JSON Mode** with the following schema constraint:
+```json
+{
+  "optimized_text": "Compacted prompt text string.",
+  "explanation": ["Point 1 of compaction details.", "Point 2 of compaction details."]
+}
+```
+This output is parsed on the backend and mapped directly to a side-by-side comparison panel displaying exact token savings ratios (calculated using `tiktoken` on the optimized string).
+
+### 3. Mathematical Budget Pricing Formulas
+The dynamic Cost Budget Planner (`CostCalculator.tsx`) computes operational expenditures over scalable traffic boundaries:
+
+$$\text{Input Cost per Request} = \left( \frac{\text{Input Tokens}}{1,000,000} \right) \times \text{Input Rate per Million}$$
+$$\text{Output Cost per Request} = \left( \frac{\text{Completion Tokens}}{1,000,050} \right) \times \text{Output Rate per Million}$$
+$$\text{Total Cost per Request} = \text{Input Cost per Request} + \text{Output Cost per Request}$$
+$$\text{Estimated Monthly Spend} = \text{Total Cost per Request} \times \text{Monthly Traffic Queries}$$
+
+This allows developers to inspect input tokenomics alongside expected output response sizes and model tiers (e.g. GPT-4o vs GPT-4 Turbo) to optimize prompt parameters before deploying production integrations.
+

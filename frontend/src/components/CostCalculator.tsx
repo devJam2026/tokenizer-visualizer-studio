@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { DollarSign, Sliders, Server, Info, TrendingUp } from "lucide-react";
+import React, { useState } from "react";
+import { Sliders, Info, TrendingUp, Cpu } from "lucide-react";
 
 interface CostCalculatorProps {
   inputTokenCount: number;
@@ -45,185 +45,198 @@ export default function CostCalculator({ inputTokenCount }: CostCalculatorProps)
   const outputPct = totalCostPerReq > 0 ? (costPerOutputReq / totalCostPerReq) * 100 : 50;
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-md flex flex-col gap-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
-        <div>
-          <h3 className="text-base font-bold text-slate-200 flex items-center gap-2">
-            <Sliders className="w-4.5 h-4.5 text-indigo-400" />
-            Interactive Prompt Cost Calculator
+    <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-md flex flex-col gap-5 max-w-sm w-full select-none font-sans">
+      
+      {/* HEADER SECTION */}
+      <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+        <Sliders className="w-4 h-4 text-indigo-400 shrink-0" />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-xs font-bold text-slate-205 uppercase tracking-widest truncate">
+            Prompt Cost Calculator
           </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Model input/output cost projections based on production query scaling.
+          <p className="text-[10px] text-slate-450 mt-0.5 truncate">
+            Model input/output budget projections
           </p>
         </div>
-        <div className="inline-flex rounded-xl bg-slate-950 p-1 border border-slate-800">
-          {Object.entries(MODELS).map(([key, val]) => (
-            <button
-              key={key}
-              onClick={() => setSelectedModel(key)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                selectedModel === key
-                  ? "bg-indigo-600 text-white shadow"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              {val.name}
-            </button>
-          ))}
+      </div>
+
+      {/* MODEL SELECTOR DROPDOWN (Prevents horizontal squishing) */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+          <Cpu className="w-3 h-3 text-indigo-550" />
+          Target LLM Model
+        </label>
+        <div className="relative">
+          <select
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="w-full bg-slate-950 border border-slate-800 text-slate-100 rounded-lg px-2.5 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500/50 cursor-pointer appearance-none pr-8 font-sans"
+          >
+            {Object.entries(MODELS).map(([key, val]) => (
+              <option key={key} value={key} className="bg-slate-950 text-slate-200">
+                {val.name} ({key === "custom" ? "Custom" : `$${val.inputCost.toFixed(2)} / $${val.outputCost.toFixed(2)}`})
+              </option>
+            ))}
+          </select>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-[10px]">
+            ▼
+          </div>
         </div>
       </div>
 
-      {/* Inputs sliders and sliders panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 flex flex-col gap-5">
-          {/* Custom rates (only visible if custom model selected) */}
-          {selectedModel === "custom" && (
-            <div className="grid grid-cols-2 gap-4 p-4 rounded-xl bg-slate-950 border border-indigo-900/10">
-              <div>
-                <label className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest block mb-1.5">
-                  Input Cost / 1M Tokens ($)
-                </label>
-                <input
-                  type="number"
-                  value={customInputRate}
-                  onChange={(e) => setCustomInputRate(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-105 font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest block mb-1.5">
-                  Output Cost / 1M Tokens ($)
-                </label>
-                <input
-                  type="number"
-                  value={customOutputRate}
-                  onChange={(e) => setCustomOutputRate(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-105 font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Slider 1: Expected Output Length */}
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-bold text-slate-350 uppercase tracking-wider flex items-center gap-1">
-                Expected Completion Tokens:
-                <span className="text-[10px] font-medium text-slate-400 uppercase font-sans border border-slate-800 px-1.5 py-0.5 rounded-md bg-slate-950">
-                  {expectedOutputTokens} tokens
-                </span>
-              </span>
-              <span className="text-[10px] text-slate-500">Output model size</span>
-            </div>
+      {/* CUSTOM PRICING INPUTS */}
+      {selectedModel === "custom" && (
+        <div className="grid grid-cols-2 gap-3 p-3 rounded-lg bg-slate-950/60 border border-indigo-900/10">
+          <div>
+            <label className="text-[8px] font-bold text-indigo-305 uppercase tracking-widest block mb-1">
+              Input $/1M Tok
+            </label>
             <input
-              type="range"
-              min="50"
-              max="4096"
-              step="50"
-              value={expectedOutputTokens}
-              onChange={(e) => setExpectedOutputTokens(parseInt(e.target.value))}
-              className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+              type="number"
+              value={customInputRate}
+              onChange={(e) => setCustomInputRate(parseFloat(e.target.value) || 0)}
+              className="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              step="0.1"
+              min="0"
             />
-            <div className="flex justify-between text-[9px] font-semibold text-slate-500 px-1 font-mono">
-              <span>Short (50)</span>
-              <span>Medium (1000)</span>
-              <span>Long (4096)</span>
+          </div>
+          <div>
+            <label className="text-[8px] font-bold text-indigo-305 uppercase tracking-widest block mb-1">
+              Output $/1M Tok
+            </label>
+            <input
+              type="number"
+              value={customOutputRate}
+              onChange={(e) => setCustomOutputRate(parseFloat(e.target.value) || 0)}
+              className="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              step="0.1"
+              min="0"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* SLIDER 1: EXPECTED OUTPUT LENGTH */}
+      <div className="flex flex-col gap-1.5">
+        <div className="flex justify-between items-center text-xs">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+            Completion size
+          </span>
+          <span className="text-[10px] font-mono font-bold text-indigo-400 bg-slate-950 border border-slate-850 px-1.5 py-0.5 rounded">
+            {expectedOutputTokens} tokens
+          </span>
+        </div>
+        <input
+          type="range"
+          min="50"
+          max="4096"
+          step="50"
+          value={expectedOutputTokens}
+          onChange={(e) => setExpectedOutputTokens(parseInt(e.target.value))}
+          className="w-full h-1 bg-slate-950 rounded appearance-none cursor-pointer accent-indigo-500"
+        />
+        <div className="flex justify-between text-[8px] font-bold text-slate-500 font-mono px-0.5">
+          <span>Short (50)</span>
+          <span>Medium (1K)</span>
+          <span>Long (4K)</span>
+        </div>
+      </div>
+
+      {/* SLIDER 2: MONTHLY INVOCATIONS */}
+      <div className="flex flex-col gap-1.5">
+        <div className="flex justify-between items-center text-xs">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+            Monthly Traffic
+          </span>
+          <span className="text-[10px] font-mono font-bold text-teal-400 bg-slate-950 border border-slate-850 px-1.5 py-0.5 rounded">
+            {monthlyRequests.toLocaleString()} reqs
+          </span>
+        </div>
+        <input
+          type="range"
+          min="1000"
+          max="250000"
+          step="5000"
+          value={monthlyRequests}
+          onChange={(e) => setMonthlyRequests(parseInt(e.target.value))}
+          className="w-full h-1 bg-slate-950 rounded appearance-none cursor-pointer accent-teal-500"
+        />
+        <div className="flex justify-between text-[8px] font-bold text-slate-500 font-mono px-0.5">
+          <span>1K reqs</span>
+          <span>125K reqs</span>
+          <span>250K reqs</span>
+        </div>
+      </div>
+
+      {/* ESTIMATED BILLING PROJECTIONS CARD */}
+      <div className="rounded-xl border border-slate-850 bg-slate-950/80 p-4 flex flex-col gap-4 shadow-inner">
+        <div className="flex flex-col gap-2">
+          <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-900 pb-1.5 flex items-center justify-between">
+            <span>Estimated Billing</span>
+            <span className="flex items-center gap-0.5 text-teal-400">
+              <TrendingUp className="w-3 h-3" /> Live
+            </span>
+          </div>
+
+          {/* Main cost projection display */}
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold text-slate-450 uppercase tracking-wide">
+              Estimated Monthly Cost:
+            </span>
+            <div className="flex items-baseline gap-1 mt-0.5">
+              <span className="text-2xl font-extrabold text-slate-100 bg-gradient-to-r from-slate-100 via-indigo-200 to-indigo-300 bg-clip-text text-transparent">
+                ${totalMonthlyCost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+              <span className="text-[10px] text-slate-500">/mo</span>
             </div>
           </div>
 
-          {/* Slider 2: Monthly Invocations */}
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-bold text-slate-350 uppercase tracking-wider flex items-center gap-1">
-                Estimated Monthly Queries:
-                <span className="text-[10px] font-medium text-slate-400 uppercase font-sans border border-slate-800 px-1.5 py-0.5 rounded-md bg-slate-950">
-                  {monthlyRequests.toLocaleString()} reqs
-                </span>
+          {/* Detailed grid pricing (Prevents overlap) */}
+          <div className="grid grid-cols-2 gap-2 mt-1 border-t border-slate-900 pt-2 text-xs">
+            <div className="flex flex-col min-w-0">
+              <span className="text-[8px] font-bold text-slate-500 uppercase truncate">
+                Single query
               </span>
-              <span className="text-[10px] text-slate-500">Traffic volume scale</span>
+              <span className="text-xs font-bold text-slate-300 font-mono truncate">
+                ${totalCostPerReq.toFixed(5)}
+              </span>
             </div>
-            <input
-              type="range"
-              min="1000"
-              max="500000"
-              step="5000"
-              value={monthlyRequests}
-              onChange={(e) => setMonthlyRequests(parseInt(e.target.value))}
-              className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-teal-500"
-            />
-            <div className="flex justify-between text-[9px] font-semibold text-slate-500 px-1 font-mono">
-              <span>1K</span>
-              <span>250K</span>
-              <span>500K</span>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[8px] font-bold text-slate-500 uppercase truncate">
+                Per 1M queries
+              </span>
+              <span className="text-xs font-bold text-indigo-400 font-mono truncate">
+                ${costPerMillionReqs.toFixed(2)}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Financial reports display (Right Card) */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 flex flex-col justify-between gap-4 shadow-inner">
-          <div className="flex flex-col gap-3">
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-900 pb-1.5 flex items-center justify-between">
-              <span>ESTIMATED BILLING</span>
-              <span className="flex items-center gap-0.5 text-teal-400">
-                <TrendingUp className="w-3 h-3" /> Live
-              </span>
-            </div>
-
-            {/* Main monthly projection cost display */}
-            <div className="flex flex-col">
-              <span className="text-[11px] font-bold text-slate-400">Estimated Monthly Cost:</span>
-              <div className="flex items-baseline gap-1 mt-1">
-                <span className="text-3xl font-extrabold text-slate-100 bg-gradient-to-r from-slate-100 to-indigo-300 bg-clip-text text-transparent">
-                  ${totalMonthlyCost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </span>
-                <span className="text-xs text-slate-500">/ month</span>
-              </div>
-            </div>
-
-            {/* Secondary pricing metrics */}
-            <div className="grid grid-cols-2 gap-3 mt-2 border-t border-slate-900 pt-3">
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-slate-500 uppercase">Single Query</span>
-                <span className="text-sm font-extrabold text-slate-205 font-mono">
-                  ${totalCostPerReq.toFixed(5)}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-slate-500 uppercase">Per 1M Runs</span>
-                <span className="text-sm font-extrabold text-indigo-400 font-mono">
-                  ${costPerMillionReqs.toFixed(2)}
-                </span>
-              </div>
-            </div>
+        {/* Input vs Output proportions bar */}
+        <div className="flex flex-col gap-1.5 border-t border-slate-900 pt-2.5">
+          <div className="flex justify-between text-[8px] font-extrabold tracking-wide uppercase">
+            <span className="text-indigo-400">Input ({inputPct.toFixed(0)}%)</span>
+            <span className="text-teal-400">Output ({outputPct.toFixed(0)}%)</span>
           </div>
-
-          {/* Input vs Output gauge breakdown */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-[9px] font-bold text-slate-400">
-              <span className="text-indigo-400">Input ({inputPct.toFixed(0)}%)</span>
-              <span className="text-teal-400">Output ({outputPct.toFixed(0)}%)</span>
-            </div>
-            <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden flex border border-slate-800">
-              <div 
-                className="h-full bg-indigo-500 transition-all duration-300"
-                style={{ width: `${inputPct}%` }}
-              ></div>
-              <div 
-                className="h-full bg-teal-500 transition-all duration-300"
-                style={{ width: `${outputPct}%` }}
-              ></div>
-            </div>
-            <div className="flex items-center gap-1 text-[9px] text-slate-500 mt-1 leading-normal">
-              <Info className="w-3 h-3 shrink-0" />
-              <span>Input prompt is {inputTokenCount} tokens ($ {inputRate.toFixed(2)}/1M). Completion is simulated ($ {outputRate.toFixed(2)}/1M).</span>
-            </div>
+          <div className="w-full h-1.5 bg-slate-900 rounded overflow-hidden flex border border-slate-800/80">
+            <div 
+              className="h-full bg-indigo-500 transition-all duration-300"
+              style={{ width: `${inputPct}%` }}
+            ></div>
+            <div 
+              className="h-full bg-teal-500 transition-all duration-300"
+              style={{ width: `${outputPct}%` }}
+            ></div>
+          </div>
+          <div className="flex items-start gap-1 text-[8px] text-slate-500 leading-normal mt-0.5">
+            <Info className="w-2.5 h-2.5 shrink-0 mt-0.5 text-slate-600" />
+            <span>
+              Input is {inputTokenCount} tokens (${inputRate.toFixed(2)}/1M). Output is simulated (${outputRate.toFixed(2)}/1M).
+            </span>
           </div>
         </div>
       </div>
+
     </div>
   );
 }

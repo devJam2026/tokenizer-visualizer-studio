@@ -149,7 +149,7 @@ When you type in the text box, a React \`useRef\` timer waits for you to pause t
 ### Phase 2: Next.js API Rewrite (\`frontend/next.config.ts\`)
 To prevent Cross-Origin Resource Sharing (CORS) security issues and bypass having to hardcode port numbers, the Next.js development server proxies all \`/api/*\` requests on the fly to \`http://127.0.0.1:8000/api/*\` where the Python backend is listening.
 
-### Phase 3: Parallel Python Tokenization Engine (\`backend/main.py\`)
+### Phase 3: Parallel Python Tokenization Engine (\`backend/main.py\` & \`backend/tokenizer_service/\` package)
 Rather than making multiple sequential requests for each model, the Python FastAPI backend processes **four models in parallel** in a single call:
 1. **GPT-4 (\`cl100k_base\`)** - Using the official C++ binary wrapper \`tiktoken\`.
 2. **GPT-4o (\`o200k_base\`)** - Using the updated token dictionary from \`tiktoken\`.

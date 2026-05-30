@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sparkles, Eye, Code, Info, RefreshCw, AlertTriangle } from "lucide-react";
+import { Sparkles, Eye, Info, RefreshCw, AlertTriangle } from "lucide-react";
 import AIStudio from "./AIStudio";
+import AnalysisViewer from "./AnalysisViewer";
 
 interface TokenData {
   tokenIds: number[];
@@ -109,40 +110,7 @@ export default function TokenCanvas({
     return formatted;
   };
 
-  // Simple markdown renderer for the analysis tab
-  const renderFormattedAnalysis = (md: string) => {
-    if (!md) return <p className="text-slate-500 italic text-xs">No analysis loaded. Write some text to profile.</p>;
-    const lines = md.split("\n");
-    return lines.map((line, i) => {
-      if (line.startsWith("###")) {
-        return <h4 key={i} className="text-xs font-extrabold text-indigo-400 mt-3 mb-1 uppercase tracking-wide">{line.replace("###", "").trim()}</h4>;
-      }
-      if (line.startsWith("- **")) {
-        const boldRegex = /\*\*([^*]+)\*\*/g;
-        const matches = [...line.matchAll(boldRegex)];
-        if (matches.length > 0) {
-          const title = matches[0][1];
-          const rest = line.replace(`- **${title}**`, "");
-          return (
-            <div key={i} className="mt-1.5 flex items-start gap-1 text-[11px] text-slate-350 leading-relaxed pl-1">
-              <span className="text-indigo-500 shrink-0">•</span>
-              <span>
-                <strong className="text-slate-200">{title}</strong>
-                {rest}
-              </span>
-            </div>
-          );
-        }
-      }
-      if (line.startsWith("**💡") || line.startsWith("**Summary")) {
-        return <p key={i} className="mt-3 font-bold text-slate-200 border-t border-slate-900 pt-2 flex items-center gap-1 text-xs">{line.replace(/\*\*/g, "")}</p>;
-      }
-      if (line.trim() && !line.startsWith("*")) {
-        return <p key={i} className="text-[11px] text-slate-400 leading-normal mt-1">{line}</p>;
-      }
-      return <div key={i} className="h-0.5" />;
-    });
-  };
+
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 backdrop-blur-md flex flex-col gap-4 shadow-lg hover:shadow-indigo-500/5 transition-all w-full animate-in fade-in duration-200 flex-1 h-full">
@@ -276,12 +244,12 @@ export default function TokenCanvas({
             )}
             
             {isLoadingExplain ? (
-              <div className="flex flex-col items-center justify-center py-10 gap-3 text-slate-400 font-sans animate-pulse">
+              <div className="flex flex-col items-center justify-center py-10 gap-3 text-slate-400 font-sans animate-pulse select-none">
                 <RefreshCw className="w-6 h-6 text-indigo-500 animate-spin" />
                 <p className="text-[11px] font-semibold">Generating live model diagnostics...</p>
               </div>
             ) : (
-              renderFormattedAnalysis(explanation)
+              <AnalysisViewer explanation={explanation} />
             )}
           </div>
         )}

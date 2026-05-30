@@ -47,29 +47,50 @@ tokenizer-visualizer-studio/
 ├── .gitignore                # Filters node_modules, build artifacts, and caches.
 ├── .env.example              # Development environment configurations.
 ├── docs/
-│   └── system_design.md      # In-depth system design, BPE math alignment, and fallback logic.
+│   ├── comprehensive_guide.md # High-level guide on how tokenizers and pricing calculations work.
+│   ├── learning_insights.md   # GenAI learning path curriculum and hands-on developer exercises.
+│   ├── system_design.md      # In-depth system design, parallel tokenization, and fallback simulators.
+│   └── images/               # Directory containing system diagrams and visual assets.
 ├── backend/
 │   ├── requirements.txt      # Python dependencies (fastapi, uvicorn, tiktoken, transformers, openai).
 │   ├── run.py                # Server execution entry point.
 │   ├── main.py               # REST API endpoints, pricing metrics, and AI profiling routes.
-│   ├── tokenizer_service.py  # Slicing engines and offline fallback heuristics.
-│   └── openai_service.py     # OpenAI client wrapper for prompt optimizations.
+│   ├── openai_service.py     # OpenAI client wrapper for prompt optimizations.
+│   ├── test_report.txt       # Performance profile run logs and debug outputs.
+│   └── tokenizer_service/    # Modular tokenization packages with simulators and alignments.
+│       ├── __init__.py       # Package exports exposing primary interfaces and package flags.
+│       ├── tokenizer_service.py # Orchestrator dividing and running standard or fallback tokenizers.
+│       ├── tiktoken_tokenizer.py # Byte-to-character offset alignment algorithms for GPT-4/GPT-4o.
+│       ├── llama_tokenizer.py # Hugging Face or mock simulation split routines for LLaMA 3.
+│       ├── bert_tokenizer.py  # WordPiece subword slicing engines for Google BERT.
+│       └── heuristic_analyzer.py # Off-line BPE inflation metrics and diagnostic calculators.
 └── frontend/
     ├── package.json          # Next.js npm dependencies.
     ├── next.config.ts        # Rewrites /api/* request proxies to localhost:8000.
     ├── tsconfig.json         # Module alias overrides.
+    ├── eslint.config.mjs     # ESLint rules configuration.
+    ├── postcss.config.mjs    # PostCSS rules configuration.
     └── src/
         ├── app/
         │   ├── layout.tsx    # SEO metadata titles and layouts.
         │   ├── globals.css   # Custom Outfit typography, backgrounds, and scrollbars.
+        │   ├── favicon.ico   # Studio browser tab brand icon.
         │   └── page.tsx      # Central dashboard orchestrator.
-        └── components/
-            ├── MetricsGrid.tsx  # Character, Token, Ratio, and Cost statistic cards.
-            ├── CompareBar.tsx   # Interactive horizontal comparative charts.
-            ├── TokenCanvas.tsx  # Alternating token highlight chips and inspector tooltips.
-            ├── ApiKeySettings.tsx # Secure client-side local storage API Key controller.
-            ├── CostCalculator.tsx # Dynamic sliding prompt billing calculator and gauges.
-            └── AIStudio.tsx     # Tabbed AI diagnostics and side-by-side prompt optimizations.
+        ├── components/
+        │   ├── MetricsGrid.tsx  # Character, Token, Ratio, and Cost statistic cards.
+        │   ├── CompareBar.tsx   # Interactive horizontal comparative charts.
+        │   ├── TokenCanvas.tsx  # Alternating token highlight chips and inspector tooltips.
+        │   ├── ApiKeySettings.tsx # Secure client-side local storage API Key controller.
+        │   ├── CostCalculator.tsx # Dynamic sliding prompt billing calculator and gauges.
+        │   ├── AIStudio.tsx     # Tabbed AI diagnostics and side-by-side prompt optimizations.
+        │   ├── DocsReader.tsx   # In-app interactive reader for documentation markdown.
+        │   ├── PresetSelector.tsx # Natural language and code presets configuration panels.
+        │   ├── ModelSelector.tsx # Model quick selector grid, vocab parameters, and toggles.
+        │   ├── TokenFrequencyChart.tsx # SVG sequence length frequency histogram charts.
+        │   └── AnalysisViewer.tsx # Custom markdown formatter for in-app diagnostics.
+        └── data/
+            ├── docsData.ts   # Local catalog source definitions for in-app docs pages.
+            └── presets.ts    # Standard edge-case programming language and multilingual prompt presets.
 ```
 
 ---

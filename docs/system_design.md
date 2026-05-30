@@ -27,7 +27,7 @@ graph TB
 
     subgraph Server Layer (FastAPI Python)
         API[main.py: REST Router]
-        Svc[tokenizer_service.py: Tokenizer Coordinator]
+        Svc["tokenizer_service (package): Tokenizer Coordinator"]
         
         subgraph Real Tokenization Engines
             Tiktoken[tiktoken: cl100k & o200k]
@@ -65,30 +65,52 @@ Below is the complete file layout of the project, detailing the architectural pu
 tokenizer-visualizer-studio/
 ├── README.md                 # Project quick-start, local startup commands, and guide.
 ├── .gitignore                # Filters node_modules, .next builds, Python caches, and environments.
+├── .env.example              # Development environment configurations.
 ├── docs/
-│   └── system_design.md      # Detailed system architecture, algorithms deep dive, and designs.
+│   ├── comprehensive_guide.md # High-level guide on how tokenizers and pricing calculations work.
+│   ├── learning_insights.md   # GenAI learning path curriculum and hands-on developer exercises.
+│   ├── system_design.md      # In-depth system design, parallel tokenization, and fallback simulators.
+│   └── images/               # Directory containing system diagrams and visual assets.
 ├── backend/
-│   ├── requirements.txt      # Lists Python libraries: fastapi, uvicorn, tiktoken, transformers, tokenizers, openai.
+│   ├── requirements.txt      # Python dependencies (fastapi, uvicorn, tiktoken, transformers, openai).
 │   ├── run.py                # Boots uvicorn server on localhost:8000 with reload enabled.
-│   ├── main.py               # Exposes parallel tokenization endpoints and V3 AI diagnostic routes.
-│   ├── tokenizer_service.py  # Coordinates tokenization logic and runs local fallback simulators.
-│   └── openai_service.py     # Integrates with OpenAI API for prompt diagnostics and optimizations.
+│   ├── main.py               # REST API endpoints, pricing metrics, and AI profiling routes.
+│   ├── openai_service.py     # OpenAI client wrapper for prompt optimizations.
+│   ├── test_report.txt       # Performance profile run logs and debug outputs.
+│   └── tokenizer_service/    # Modular tokenization packages with simulators and alignments.
+│       ├── __init__.py       # Package exports exposing primary interfaces and package flags.
+│       ├── tokenizer_service.py # Orchestrator dividing and running standard or fallback tokenizers.
+│       ├── tiktoken_tokenizer.py # Byte-to-character offset alignment algorithms for GPT-4/GPT-4o.
+│       ├── llama_tokenizer.py # Hugging Face or mock simulation split routines for LLaMA 3.
+│       ├── bert_tokenizer.py  # WordPiece subword slicing engines for Google BERT.
+│       └── heuristic_analyzer.py # Off-line BPE inflation metrics and diagnostic calculators.
 └── frontend/
-    ├── package.json          # Next.js 16 npm dependencies, Tailwind 4, and Lucide React icons.
-    ├── next.config.ts        # Rewrites /api/* to http://127.0.0.1:8000/api/* to proxy traffic and bypass CORS.
-    ├── tsconfig.json         # Configures compilation aliases (@/*) mapping to standard root paths.
+    ├── package.json          # Next.js npm dependencies.
+    ├── next.config.ts        # Rewrites /api/* request proxies to localhost:8000.
+    ├── tsconfig.json         # Module alias overrides.
+    ├── eslint.config.mjs     # ESLint rules configuration.
+    ├── postcss.config.mjs    # PostCSS rules configuration.
     └── src/
         ├── app/
-        │   ├── layout.tsx    # Manages global HTML tags, SEO keywords, titles, and layout shells.
-        │   ├── globals.css   # Imports Outfit/Mono font faces, radial mesh styles, and custom scrollbars.
+        │   ├── layout.tsx    # SEO metadata titles and layouts.
+        │   ├── globals.css   # Custom Outfit typography, backgrounds, and scrollbars.
+        │   ├── favicon.ico   # Studio browser tab brand icon.
         │   └── page.tsx      # Central dashboard orchestrator.
-        └── components/
-            ├── MetricsGrid.tsx   # Renders glassmorphic cards tracking character, token counts, and cost scaling.
-            ├── CompareBar.tsx    # Generates side-by-side animated benchmarking progress charts.
-            ├── TokenCanvas.tsx   # Visualizes tokens as colored chips with floating mouse tooltips.
-            ├── ApiKeySettings.tsx # Configures secure local storage client-side API keys.
-            ├── CostCalculator.tsx # Interactive parameter slider costing panel.
-            └── AIStudio.tsx      # Main tabbed interface for prompt explanations and compaction.
+        ├── components/
+        │   ├── MetricsGrid.tsx  # Character, Token, Ratio, and Cost statistic cards.
+        │   ├── CompareBar.tsx   # Interactive horizontal comparative charts.
+        │   ├── TokenCanvas.tsx  # Alternating token highlight chips and inspector tooltips.
+        │   ├── ApiKeySettings.tsx # Secure client-side local storage API Key controller.
+        │   ├── CostCalculator.tsx # Dynamic sliding prompt billing calculator and gauges.
+        │   ├── AIStudio.tsx     # Tabbed AI diagnostics and side-by-side prompt optimizations.
+        │   ├── DocsReader.tsx   # In-app interactive reader for documentation markdown.
+        │   ├── PresetSelector.tsx # Natural language and code presets configuration panels.
+        │   ├── ModelSelector.tsx # Model quick selector grid, vocab parameters, and toggles.
+        │   ├── TokenFrequencyChart.tsx # SVG sequence length frequency histogram charts.
+        │   └── AnalysisViewer.tsx # Custom markdown formatter for in-app diagnostics.
+        └── data/
+            ├── docsData.ts   # Local catalog source definitions for in-app docs pages.
+            └── presets.ts    # Standard edge-case programming language and multilingual prompt presets.
 ```
 
 
@@ -150,7 +172,7 @@ Modern LLMs process text as sub-word units to balance vocabulary size with synta
 
 The core engineering challenge in building a token visualizer is **accurately mapping token IDs back to their exact character coordinates (character spans)** in the original input string. Since BPE operates over UTF-8 bytes and emojis/non-English scripts consume multiple bytes per character, simple string splitting fails.
 
-We solved this in `tokenizer_service.py` using a **Byte-Level Bidirectional Alignment Algorithm**:
+We solved this in the modular `tokenizer_service` package (specifically in `tiktoken_tokenizer.py`) using a **Byte-Level Bidirectional Alignment Algorithm**:
 
 ```python
 def tokenize_tiktoken(self, text: str, model_name: str) -> Dict[str, Any]:
@@ -197,7 +219,7 @@ This guarantees that **no matter how complex the multi-byte characters or emojis
 
 If a user is running offline, behind a corporate proxy, or doesn't have the Hugging Face cache initialized, downloading `bert-base-uncased` or LLaMA tokenizers (which can fail due to API rate limits or auth keys) will fail.
 
-To ensure the studio is **100% resilient and always active**, we implemented high-fidelity fallback simulators in `tokenizer_service.py` under the `FallbackTokenizer` class:
+To ensure the studio is **100% resilient and always active**, we implemented high-fidelity fallback simulators inside each tokenizer sub-engine class in the `tokenizer_service` package (e.g., `simulate_bpe_fallback`):
 
 *   **BPE Simulation:** Slices strings using whitespace and word-boundary regular expressions, splitting long words in half to mimic byte-pair merge behavior.
 *   **WordPiece Simulation:** Tokenizes words and matches them against common word-structure suffixes (e.g., `ing`, `tion`, `er`, `s`). Trailing fragments are automatically prefixed with standard `##` symbols (e.g., `blocked` -> `['blo', '##cked']`).

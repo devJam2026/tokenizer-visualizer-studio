@@ -34,18 +34,13 @@ export default function DocsReader() {
   });
 
   const getIconComponent = (iconName: string) => {
-    switch (iconName) {
-      case "GraduationCap":
-        return <GraduationCap className="w-4 h-4 text-indigo-400" />;
-      case "Cpu":
-        return <Cpu className="w-4 h-4 text-teal-400" />;
-      case "Layers":
-        return <Layers className="w-4 h-4 text-pink-400" />;
-      case "HelpCircle":
-        return <HelpCircle className="w-4 h-4 text-purple-400" />;
-      default:
-        return <FileText className="w-4 h-4 text-indigo-400" />;
-    }
+    const icons: Record<string, React.ReactNode> = {
+      GraduationCap: <GraduationCap className="w-4 h-4 text-indigo-400" />,
+      Cpu: <Cpu className="w-4 h-4 text-teal-400" />,
+      Layers: <Layers className="w-4 h-4 text-pink-400" />,
+      HelpCircle: <HelpCircle className="w-4 h-4 text-purple-400" />
+    };
+    return icons[iconName] || <FileText className="w-4 h-4 text-indigo-400" />;
   };
 
   // Render markdown tags dynamically into gorgeous premium HTML blocks

@@ -298,4 +298,83 @@ The React client utilizes standard state synchronization patterns to coordinate 
 * **Text Stream Synchronizer:** Debounces editor inputs to prevent UI lockups, coordinating text changes across \`TokenCanvas\`, \`MetricsGrid\`, and \`CompareBar\` at a constant rate.
 * **Storage Isolation Broker:** Securely isolated from global servers, API keys are kept entirely inside the user's browser local storage, safeguarding sensitive credentials.`,
   },
+  tokenomics_faq: {
+    id: "tokenomics_faq",
+    title: "Tokenomics & Prompt FAQ",
+    category: "FAQ",
+    icon: "HelpCircle",
+    summary: "Frequently Asked Questions regarding BPE tokenizers, LLM pricing indices, prompt optimizations, and caching discounts.",
+    content: `# Tokenomics & Prompt Optimization FAQ
+
+This document answers the most frequently asked questions (FAQs) regarding subword tokenization, LLM context limits, API pricing architectures, and prompt caching optimizations.
+
+---
+
+## 💡 LLM Tokenization Mechanics
+
+### ❓ What is a token in the context of Large Language Models (LLMs)?
+In Large Language Models, a **token** is the basic atomic unit of data processed by the model. Rather than reading raw letters or full dictionary words, the model converts text into numeric token IDs. 
+* A single token can represent a single character, a subword fragment, a full word, or even a blank space depending on the vocabulary.
+* Tokenization allows LLMs to capture grammatical relationships, prefix roots, and semantic patterns efficiently inside a fixed vocabulary space.
+
+### ❓ What is a tokenizer and how does it work?
+A **tokenizer** is a tool that converts text into tokens—the basic units that LLMs process. Most modern LLMs employ **Byte-Pair Encoding (BPE)** tokenization, which breaks text into subword units by iteratively merging frequent character pairs. 
+* **Tiktoken:** OpenAI's BPE library (maps tokens like \`['token', 'ization']\`).
+* **SentencePiece:** Used by LLaMA (preserves layouts by mapping spaces as a special block char \` \`).
+* **WordPiece:** Used by Google's BERT (segments subwords using standard \`##\` prefixes).
+
+### ❓ How many tokens is 1,000 words approximately?
+As an average, **1,000 English words** equate to approximately **1,300 to 1,500 tokens** (around 1.3 to 1.5 tokens per word) for modern models like GPT-4, GPT-5, or Claude. 
+However, this ratio varies based on:
+1. **Script/Language:** E.g., Chinese, Hindi, or Arabic require significantly more tokens per character due to byte-level expansion.
+2. **Text Type:** System code, markdown syntax, and data arrays consume more tokens per word due to structural characters.
+
+---
+
+## 💰 API Cost Modeling & Caching
+
+### ❓ Which AI model has the cheapest API pricing in 2026?
+Mainstream LLM pricing has dramatically decreased, offering specialized tiers:
+* **Gemini 2.5 Flash-Lite:** Highly cost-efficient at **$0.10** per 1M input tokens and **$0.40** per 1M output tokens.
+* **GPT-5 mini:** Offers compact capabilities at **$0.25** per 1M input tokens and **$2.00** per 1M output tokens.
+* **Gemini 3.1 Pro:** Exceptional balance of high-intelligence and low-cost (**$2.00** per 1M inputs, **$12.00** per 1M outputs).
+* **Claude Haiku 4.5:** Cost-effective Anthropic tier at **$1.00** per 1M input tokens and **$5.00** per 1M output tokens.
+
+### ❓ What is cached input pricing and how does it save money?
+**Prompt Caching** (or cached input pricing) is a modern LLM cloud optimization that offers discounts of **up to 90%** on input tokens when you reuse the exact same prompt prefix across multiple sequential API requests.
+This is highly recommended for:
+1. **Static System Instructions:** Long system prompts or configuration boundaries.
+2. **Few-Shot Prompting:** Large contextual datasets or reference guides.
+3. **Document Q&A:** Querying a large, fixed context array multiple times.
+
+---
+
+## ⚡ Prompt Optimization Strategies
+
+### ❓ How do I reduce my LLM API costs?
+You can dramatically cut API operational budgets by following six core patterns:
+1. **Leverage Prompt Caching:** Pre-cache static context prefixes to secure 90% savings.
+2. **Select Multi-Tier Models:** Use mini/flash models for simple routing or classification tasks, reserving pro models for reasoning.
+3. **Optimize Prompt Footprints:** Minify whitespace, comments, and layout gaps.
+4. **Utilize Batch Processing APIs:** Send non-realtime queries via batch pipelines for a 50% discount.
+5. **Compress Contexts:** Condense and summarize long documents before sending.
+6. **Deploy Open-Source Locally:** Run LLaMA or Mistral local hosts for highly repetitive, low-variance pipelines.
+
+### ❓ How can I optimize prompts to save tokens?
+To condense prompt footprints losslessly:
+* **Prune Fillers:** Avoid polite pleasantries or conversational word padding (*"Please provide a summary..."* ➔ *"Summarize..."*).
+* **Use Abbreviations:** Map complex instructions to clean keywords or structured schemas.
+* **Consolidate Few-Shot Examples:** Reduce the length and quantity of training examples in your prompt.
+* **Format with Markdown:** Cleanly group system prompts, variables, and queries to avoid wasting delimiter space.
+
+---
+
+## 🔒 Security & Privacy
+
+### ❓ How is my text data handled on this website?
+We handle prompt inputs with absolute security and strict privacy:
+* **No Server Persistence:** Your input texts, code blocks, and prompts are processed locally in real-time.
+* **Zero Storage Brokerage:** No text payloads are ever saved, indexed, or written to server databases.
+* **Client-Side Key Safety:** Your OpenAI API keys are isolated and kept strictly inside your browser's private \`localStorage\`, sent strictly over secure headers directly to the API gateway.`
+  }
 };

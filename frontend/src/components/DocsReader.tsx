@@ -41,6 +41,8 @@ export default function DocsReader() {
         return <Cpu className="w-4 h-4 text-teal-400" />;
       case "Layers":
         return <Layers className="w-4 h-4 text-pink-400" />;
+      case "HelpCircle":
+        return <HelpCircle className="w-4 h-4 text-purple-400" />;
       default:
         return <FileText className="w-4 h-4 text-indigo-400" />;
     }

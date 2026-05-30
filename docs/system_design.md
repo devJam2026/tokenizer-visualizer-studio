@@ -239,3 +239,94 @@ $$\text{Estimated Monthly Spend} = \text{Total Cost per Request} \times \text{Mo
 
 This allows developers to inspect input tokenomics alongside expected output response sizes and model tiers (e.g. GPT-4o vs GPT-4 Turbo) to optimize prompt parameters before deploying production integrations.
 
+---
+
+## 8. FastAPI REST API Specifications
+
+For developers looking to integrate other clients (e.g., Command Line Interfaces or Mobile tools), the backend exposes a clean, high-performance REST API. 
+
+### 1. Unified Tokenizer Endpoint
+*   **Path:** `POST /api/tokenize`
+*   **Description:** Slices the input text across all 4 tokenizer engines in parallel and compiles complete tokenomics metrics.
+*   **Request Payload (JSON):**
+    ```json
+    {
+      "text": "Your prompt to tokenize here."
+    }
+    ```
+*   **Response Payload (JSON):**
+    ```json
+    {
+      "text": "Your prompt to tokenize here.",
+      "charCount": 29,
+      "tokenizers": {
+        "cl100k_base": {
+          "tokens": ["Your", " prompt", " to", " token", "ize", " here", "."],
+          "tokenIds": [5739, 13735, 311, 14949, 1431, 1403, 13],
+          "offsets": [[0, 4], [4, 11], [11, 14], [14, 20], [20, 23], [23, 28], [28, 29]],
+          "isFallback": false,
+          "tokenCount": 7,
+          "ratio": 0.241,
+          "costPerRequest": 0.000035,
+          "costPerMillionRequests": 35.0,
+          "unitPrice": 5.0
+        },
+        "o200k_base": { ... },
+        "llama": { ... },
+        "bert": { ... }
+      }
+    }
+    ```
+
+### 2. Prompt Explanation Diagnostics
+*   **Path:** `POST /api/ai/explain`
+*   **Headers:** 
+    *   `X-OpenAI-API-Key` *(Optional)* - Passes standard user key dynamically.
+*   **Request Payload (JSON):**
+    ```json
+    {
+      "text": "आपका बैंक खाता ब्लॉक कर दिया जाएगा।"
+    }
+    ```
+*   **Response Payload (JSON):**
+    ```json
+    {
+      "explanation": "### 📊 Diagnostic Report...\n- **Token Inflation:** Hindi characters map to 3-4x more tokens than English.",
+      "isAI": true
+    }
+    ```
+
+### 3. Prompt Footprint Optimizer
+*   **Path:** `POST /api/ai/optimize`
+*   **Headers:** 
+    *   `X-OpenAI-API-Key` *(Required)* - Authenticates GPT optimization requests.
+*   **Request Payload (JSON):**
+    ```json
+    {
+      "text": "Please kindly block my account immediately in order to secure my funds."
+    }
+    ```
+*   **Response Payload (JSON):**
+    ```json
+    {
+      "optimizedText": "Block my account immediately to secure funds.",
+      "explanation": ["Removed conversational fluff", "Swapped verbose phrasing"],
+      "originalTokenCount": 12,
+      "optimizedTokenCount": 7,
+      "savingsPercent": 41.7
+    }
+    ```
+
+### 4. Service Health Diagnostic Ping
+*   **Path:** `GET /api/health`
+*   **Description:** Probes the FastAPI server status and packages availability flags.
+*   **Response Payload (JSON):**
+    ```json
+    {
+      "status": "online",
+      "has_tiktoken": true,
+      "has_transformers": true
+    }
+    ```
+
+

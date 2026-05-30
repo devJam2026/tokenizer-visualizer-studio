@@ -77,7 +77,7 @@ export default function MetricsGrid({
           <div
             key={item.id}
             id={item.id}
-            className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${item.color} p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-indigo-500/5 group`}
+            className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${item.color} p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(99,102,241,0.12)] hover:border-indigo-500/35 group`}
           >
             {/* Ambient Background Glow Effect */}
             <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-current opacity-[0.03] blur-xl group-hover:scale-125 transition-transform duration-500"></div>

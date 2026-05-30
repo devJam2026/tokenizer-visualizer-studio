@@ -92,5 +92,5 @@ For a deep dive into the underlying tokenization logic, sub-word BPE, WordPiece,
 *   **🤖 Premium AI Diagnostics & Optimizer (V3):** Explains why a prompt has a high token footprint, analyzes structural waste, and optimizes prompt redundancy to save up to 45% of prompt tokens.
 *   **🔒 Secure API Key Isolation:** OpenAI keys are processed client-side strictly inside standard `localStorage` and sent on the fly via request headers, eliminating server persistence.
 *   **📶 Hybrid Rule-Based Diagnostic Engine:** Compiles high-quality tokenomics reports offline, checking whitespace density and BPE byte expansion script factors without needing a key.
-*   **📊 Dynamic Cost Budget Planner:** Adjusts expected monthly queries and completion lengths using sliding controllers to estimate production costs in real-time.
+*   **📊 Dynamic Cost Budget Planner:** Adjusts expected monthly queries and completion lengths using sliding controllers to estimate production costs in real-time. *(Note: The cost calculator is an educational estimation layer. It helps developers understand how token count translates into API cost at scale. It does not fetch live billing data or charge users.)*
 

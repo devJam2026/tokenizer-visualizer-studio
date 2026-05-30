@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #030712; /* Deep modern dark gray-black */
+  --background: #03010c; /* Ultra dark black with a subtle cosmic violet hue */
   --foreground: #f9fafb;
   --font-sans: 'Outfit', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -21,10 +21,25 @@ body {
   font-family: var(--font-sans);
   min-height: 100vh;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 55%),
+    radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.08) 0px, transparent 55%),
+    radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.06) 0px, transparent 60%);
   background-attachment: fixed;
+}
+
+/* Premium glassmorphism utility classes */
+.glass-panel {
+  background: rgba(17, 12, 34, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 25px 0 rgba(99, 102, 241, 0.18);
 }
 
 /* Custom premium scrollbar styling */
@@ -34,18 +49,19 @@ body {
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: rgba(17, 24, 39, 0.6);
+  background: rgba(10, 5, 25, 0.8);
   border-radius: 9999px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(75, 85, 99, 0.5);
+  background: rgba(99, 102, 241, 0.3);
   border-radius: 9999px;
-  border: 1px solid rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(3, 1, 12, 0.8);
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.6);
+  background: rgba(99, 102, 241, 0.7);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
 }
 
 /* Custom Glow Animation */
@@ -63,3 +79,4 @@ body {
 .animate-pulse-glow {
   animation: pulseGlow 6s infinite ease-in-out;
 }
+

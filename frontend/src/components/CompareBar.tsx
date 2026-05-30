@@ -102,7 +102,7 @@ export default function CompareBar({ data }: CompareBarProps) {
           return (
             <div
               key={tok.id}
-              className={`rounded-xl border p-4 transition-all duration-300 ${tok.bg} hover:border-slate-700`}
+              className={`rounded-xl border p-4 transition-all duration-300 ${tok.bg} hover:border-indigo-500/40 hover:shadow-[0_0_15px_rgba(99,102,241,0.12)]`}
             >
               <div className="flex justify-between items-start mb-2">
                 <div>

@@ -4,6 +4,8 @@ An interactive, responsive full-stack web application designed to analyze, visua
 
 This studio serves as a diagnostic profiling workbench for software engineers to optimize prompt footprints, detect token script inflation overhead, and evaluate active API pricing scaling before executing LLM cloud roundtrips.
 
+<img width="1920" height="1410" alt="image" src="https://github.com/user-attachments/assets/72298e9d-7add-4340-97dd-b9b36071aff0" />
+
 ---
 
 ## 🚀 Quick Start Guide
